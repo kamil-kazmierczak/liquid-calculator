@@ -1,13 +1,3 @@
-import {
-    Text,
-    Button,
-    Box,
-    Divider,
-    Input,
-    InputField,
-    ButtonText,
-    FormControlLabelText, FormControlLabel, FormControl,
-} from "@gluestack-ui/themed";
 import {useState} from "react";
 
 const App = () => {
@@ -16,6 +6,12 @@ const App = () => {
 
     const millilitersOfGlycerinPerNicotineMilligram = 0.039
     const millilitersOfGlycolPerNicotineMilligram = 0.017
+
+    const onChangeHandler = (event) => {
+        event.preventDefault()
+        const value = event.target.value
+        setCalc(prev => ({...prev, amountOfLiquid: Number(value)}))
+    }
 
     const initialCalculations = {
         amountOfLiquid: 0.0,
@@ -32,7 +28,8 @@ const App = () => {
     const [calc, setCalc] = useState(initialCalculations);
 
 
-    const calculate = () => {
+    const calculate = (e) => {
+        console.log(calc)
         setCalc(prevState => ({
             ...prevState,
             glycerinFromNicotine: millilitersOfGlycerinPerNicotineMilligram * (prevState.amountOfLiquid * prevState.wantedPower),
@@ -49,81 +46,47 @@ const App = () => {
     };
 
     return (
-        <Box paddingHorizontal="$10" flex={1} pt="$20" >
-            <Box flex={3}>
-                <FormControl
-                    size="md"
-                    isDisabled={false}
-                    isInvalid={false}
-                    isReadOnly={false}
-                    isRequired={false}
-                >
-                    <FormControlLabel mb="$2">
-                        <FormControlLabelText>Total amount of liquid [ml]</FormControlLabelText>
-                    </FormControlLabel>
-                    <Input mb="$5"
-                           variant="rounded">
-                        <InputField
-                            keyboardType="numeric"
-                            onChangeText={(value) => setCalc(prev => ({...prev, amountOfLiquid: Number(value)}))}
-                            placeholder="Total amount of liquid [ml]"
-                        />
-                    </Input>
-                    <FormControlLabel mb="$2">
-                        <FormControlLabelText>Power of nicotine [mg/ml]</FormControlLabelText>
-                    </FormControlLabel>
-                    <Input mb="$5"
-                           variant="underlined">
-                        <InputField
-                            keyboardType="numeric"
-                            onChangeText={(value) => setCalc(prev => ({...prev, powerOfNicotine: Number(value)}))}
-                            placeholder="Power of nicotine [mg/ml]"
-                        />
-                    </Input>
-                    <FormControlLabel mb="$2">
-                        <FormControlLabelText>Amount of aroma [ml]</FormControlLabelText>
-                    </FormControlLabel>
-                    <Input mb="$5">
-                        <InputField
-                            keyboardType="numeric"
-                            onChangeText={(value) => setCalc(prev => ({...prev, amountOfAroma: Number(value)}))}
-                            placeholder="Amount of aroma [ml]"
-                        />
-                    </Input>
-                    <FormControlLabel mb="$2">
-                        <FormControlLabelText>Wanted power [mg/ml]</FormControlLabelText>
-                    </FormControlLabel>
-                    <Input>
-                        <InputField
-                            keyboardType="numbers-and-punctuation"
-                            onChangeText={(value) => setCalc(prev => ({...prev, wantedPower: Number(value)}))}
-                            placeholder="Wanted power [mg/ml]"
-                        />
-                    </Input>
-                </FormControl>
+        <div className="container box">
+            <label className="label">Total amount of liquid [ml]</label>
+            <input className="input"
+                   onChange={onChangeHandler}
+                   placeholder="Total amount of liquid [ml]"
+            />
+            <label className="label">Power of nicotine [mg/ml]</label>
+            <input type="numeric" className="input"
+                   onChange={(e) => setCalc(prev => ({...prev, powerOfNicotine: Number(e.target.value)}))}
+                   placeholder="Power of nicotine [mg/ml]"
+            />
+            <label className="label">Amount of aroma [ml]</label>
+            <input type="text" className="input"
+                   onChange={(e) => setCalc(prev => ({...prev, amountOfAroma: Number(e.target.value)}))}
+                   placeholder="Amount of aroma [ml]"
+            />
+            <label className="label">Wanted power [mg/ml]</label>
+            <input className="input"
+                   onChange={(e) => setCalc(prev => ({...prev, wantedPower: Number(e.target.value)}))}
+                   placeholder="Wanted power [mg/ml]"
+            />
+            {/*<Box flex={1}>*/}
+            {/*    <Divider padding={1} marginVertical={20}/>*/}
 
-            </Box>
-            <Box flex={1}>
-                <Divider padding={1} marginVertical={20}/>
+            {/*    <Text>Glycerin from nicotine: {(calc.glycerinFromNicotine).toFixed(2)} ml</Text>*/}
+            {/*    <Text>Glycol from nicotine: {(calc.glycolFromNicotine).toFixed(2)} ml</Text>*/}
+            {/*    <Text>Glycerin from aroma: {(0.7 * calc.amountOfAroma).toFixed(2)} ml</Text>*/}
+            {/*    <Text>Glycol from aroma: {(0.3 * calc.amountOfAroma).toFixed(2)} ml</Text>*/}
+            {/*</Box>*/}
 
-                <Text>Glycerin from nicotine: {(calc.glycerinFromNicotine).toFixed(2)} ml</Text>
-                <Text>Glycol from nicotine: {(calc.glycolFromNicotine).toFixed(2)} ml</Text>
-                <Text>Glycerin from aroma: {(0.7 * calc.amountOfAroma).toFixed(2)} ml</Text>
-                <Text>Glycol from aroma: {(0.3 * calc.amountOfAroma).toFixed(2)} ml</Text>
-            </Box>
+            <div>
+                <label className="label">Nicotine: {calc.nicotine.toFixed(2)} ml
+                    ({(calc.glycerinFromNicotine * glycerinDensity + calc.glycolFromNicotine * glycolDensity).toFixed(2)} g)</label>
+                <label className="label">Glycerin: {calc.glycerin.toFixed(2)} ml
+                    ({(calc.glycerin * glycerinDensity).toFixed(2)} g)</label>
+                <label className="label">Glycol: {calc.glycol.toFixed(2)} ml
+                    ({(calc.glycol * glycolDensity).toFixed(2)} g)</label>
 
-            <Box flex={2}>
-                <Divider padding={1} marginVertical={20}/>
-
-                <Text>Nicotine: {calc.nicotine.toFixed(2)} ml ({(calc.glycerinFromNicotine * glycerinDensity + calc.glycolFromNicotine * glycolDensity).toFixed(2)} g)</Text>
-                <Text>Glycerin: {calc.glycerin.toFixed(2)} ml ({(calc.glycerin * glycerinDensity).toFixed(2)} g)</Text>
-                <Text>Glycol: {calc.glycol.toFixed(2)} ml ({(calc.glycol * glycolDensity).toFixed(2)} g)</Text>
-
-                <Button mt="$16" onPress={calculate}>
-                    <ButtonText>Calculate</ButtonText>
-                </Button>
-            </Box>
-        </Box>
+                <input className="button is-primary" type="button" value="Calculate" onClick={calculate}/>
+            </div>
+        </div>
     );
 };
 
